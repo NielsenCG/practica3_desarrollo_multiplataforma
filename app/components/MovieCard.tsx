@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Image, TouchableOpacity, Modal, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { useMovies } from "../context/MovieContext";
 
 interface Movie {
@@ -60,12 +60,13 @@ export default function MovieCard({ movie }: MovieCardProps) {
           <Text style={[styles.ratingText, { color: ratingColor }]}>{rating}</Text>
         </View>
 
-        {/* Indicador de favorito */}
-        {favorite && (
-          <View style={styles.favoriteBadge}>
-            <Text style={styles.heartIcon}>❤️</Text>
-          </View>
-        )}
+        <TouchableOpacity
+          onPress={handleFavoriteClick}
+          style={[styles.favoriteBadge, favorite ? styles.favoriteBadgeActive : styles.favoriteBadgeInactive]}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.heartIcon, favorite ? undefined : { color: '#1f2937' }]}>{favorite ? "❤️" : "🤍"}</Text>
+        </TouchableOpacity>
         
         {/* Título y año */}
         <View style={styles.infoContainer}>
@@ -81,10 +82,12 @@ export default function MovieCard({ movie }: MovieCardProps) {
         animationType="fade"
         onRequestClose={() => setShowDetails(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <ScrollView>
-              <View style={styles.modalContent}>
+        <TouchableWithoutFeedback onPress={() => setShowDetails(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback onPress={() => {}}>
+              <View style={styles.modalContainer}>
+                <ScrollView>
+                  <View style={styles.modalContent}>
                 {/* Imagen */}
                 <View style={styles.modalImageContainer}>
                   <Image
@@ -139,10 +142,12 @@ export default function MovieCard({ movie }: MovieCardProps) {
                     </Text>
                   </TouchableOpacity>
                 </View>
+                  </View>
+                </ScrollView>
               </View>
-            </ScrollView>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </>
   );
@@ -204,6 +209,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  favoriteBadgeActive: {
+    backgroundColor: "#ef4444",
+  },
+  favoriteBadgeInactive: {
+    backgroundColor: "rgba(255,255,255,0.95)",
   },
   heartIcon: {
     fontSize: 20,
